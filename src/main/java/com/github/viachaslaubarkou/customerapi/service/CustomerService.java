@@ -2,6 +2,7 @@ package com.github.viachaslaubarkou.customerapi.service;
 
 import com.github.viachaslaubarkou.customerapi.model.Customer;
 import com.github.viachaslaubarkou.customerapi.repository.CustomerRepository;
+import com.github.viachaslaubarkou.customerapi.util.ValidationUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,11 +26,24 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
+    public List<Customer> getByName(String name) {
+        return customerRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public List<Customer> getByPhoneNumber(String phoneNumber) {
+        validatePhoneNumber(phoneNumber);
+        return customerRepository.findByPhoneNumberContaining(phoneNumber);
+    }
+
     public Customer create(Customer customer) {
+        validateCustomer(customer);
+
         return customerRepository.save(customer);
     }
 
     public Customer update(Customer updatedCustomer) {
+        validateCustomer(updatedCustomer);
+
         Customer customer = customerRepository.findById(updatedCustomer.getId())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
         customer.setFirstName(updatedCustomer.getFirstName());
@@ -42,5 +56,22 @@ public class CustomerService {
 
     public void delete(UUID id) {
         customerRepository.deleteById(id);
+    }
+
+    private void validateCustomer(Customer customer) {
+        validateEmail(customer.getEmailAddress());
+        validatePhoneNumber(customer.getPhoneNumber());
+    }
+
+    private void validateEmail(String email) {
+        if (!ValidationUtils.isValidEmail(email)) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+    }
+
+    private void validatePhoneNumber(String phoneNumber) {
+        if (!ValidationUtils.isValidPhoneNumber(phoneNumber)) {
+            throw new IllegalArgumentException("Invalid phone number format");
+        }
     }
 }

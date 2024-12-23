@@ -72,21 +72,29 @@ mvn spring-boot:run
 * **Retrieve All Customers**  
 *Method*: `GET`  
 *URL*: `http://localhost:8080/api/customers/getAll`
-* **Retrieve a Customer by ID**  
+* **Get a Customer by ID**  
 *Method*: `GET`  
-*URL*: `http://localhost:8080/api/customers/getById/{id}`  
+*URL*: `http://localhost:8080/api/customers/getById?id={id}`  
 Replace `{id}` with a valid customer ID.
+* **Get a Customers by Name**  
+  *Method*: `GET`  
+  *URL*: `http://localhost:8080/api/customers/getByName?name={name}`  
+  Replace `{name}` with any part of any customer names.
+* **Get a Customers by Phone Number**  
+  *Method*: `GET`  
+  *URL*: `http://localhost:8080/api/customers/getByPhoneNumber?phoneNumber={phoneNumber}`  
+  Replace `{phoneNumber}` with any part of customer phone numbers.
 * **Create a New Customer**  
 *Method*: `POST`  
 *URL*: `http://localhost:8080/api/customers/create`  
-*Request Body*: `{ "firstName": "Ivan", "middleName": "Ivanovich", "lastName": "Ivanov", "emailAddress": "ivan.ivanov@example.com", "phoneNumber": "123-456-7890" }`
+*Request Body*: `{ "firstName": "Ivan", "middleName": "Ivanovich", "lastName": "Ivanov", "emailAddress": "ivan.ivanov@example.com", "phoneNumber": "+1234567890" }`
 * **Update an Existing Customer**  
 *Method*: `POST`  
 *URL*: `http://localhost:8080/api/customers/update`  
-*Request Body*: `{ "id": "5dd6b153-c0f1-11ef-a4d8-0242ac110002", "firstName": "Ivan", "middleName": "Ivanavich", "lastName": "Ivanou", "emailAddress": "ivan.ivanou@example.com", "phoneNumber": "111-222-3333" }`
+*Request Body*: `{ "id": "5dd6b153-c0f1-11ef-a4d8-0242ac110002", "firstName": "Ivan", "middleName": "Ivanavich", "lastName": "Ivanou", "emailAddress": "ivan.ivanou@example.com", "phoneNumber": "1112223333" }`
 * **Delete a Customer**  
 *Method*: `DELETE`  
-*URL*: `http://localhost:8080/api/customers/delete/{id}`  
+*URL*: `http://localhost:8080/api/customers/delete?id={id}`  
 Replace `{id}` with the customer ID to delete.
 
 ## Clone the Repository

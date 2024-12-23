@@ -23,11 +23,21 @@ public class CustomerController {
         return customerService.getAll();
     }
 
-    @GetMapping("/getById/{id}")
-    public ResponseEntity<Customer> getById(@PathVariable("id") UUID id) {
+    @GetMapping("/getById")
+    public ResponseEntity<Customer> getById(@RequestParam UUID id) {
         return customerService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/getByName")
+    public List<Customer> getByName(@RequestParam String name) {
+        return customerService.getByName(name);
+    }
+
+    @GetMapping("/getByPhoneNumber")
+    public List<Customer> getByPhoneNumber(@RequestParam String phoneNumber) {
+        return customerService.getByPhoneNumber(phoneNumber);
     }
 
     @PostMapping("/create")
@@ -40,8 +50,8 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.update(updatedCustomer));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable("id") UUID id) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteCustomer(@RequestParam UUID id) {
         customerService.delete(id);
         return ResponseEntity.noContent().build();
     }

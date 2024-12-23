@@ -29,18 +29,24 @@ public class CustomerRepositoryTest {
         customer1.setFirstName("Ivan");
         customer1.setMiddleName("Ivanovich");
         customer1.setLastName("Ivanov");
-        customer1.setEmailAddress("ivan.ivanov@example.com");
-        customer1.setPhoneNumber("123-456-7890");
+        customer1.setEmailAddress("ivan.ivanov@example.by");
+        customer1.setPhoneNumber("1234567890");
 
         customer2 = new Customer();
         customer2.setFirstName("Petr");
         customer2.setMiddleName("Petrovich");
         customer2.setLastName("Petrov");
         customer2.setEmailAddress("petr.petrov@example.com");
-        customer2.setPhoneNumber("987-654-3210");
+        customer2.setPhoneNumber("+9876543210");
 
         customer1 = customerRepository.save(customer1);
         customer2 = customerRepository.save(customer2);
+    }
+
+    @Test
+    public void findAll_ShouldReturnListOfCustomers() {
+        List<Customer> customers = customerRepository.findAll();
+        assertEquals(2, customers.size());
     }
 
     @Test
@@ -58,9 +64,21 @@ public class CustomerRepositoryTest {
     }
 
     @Test
-    public void findAll_ShouldReturnListOfCustomers() {
-        List<Customer> customers = customerRepository.findAll();
-        assertEquals(2, customers.size());
+    void findByNameContainingIgnoreCase_ShouldReturnMatchingCustomers() {
+        List<Customer> result = customerRepository.findByNameContainingIgnoreCase("ivan");
+
+        assertFalse(result.isEmpty());
+        assertTrue(result.contains(customer1));
+        assertFalse(result.contains(customer2));
+    }
+
+    @Test
+    void findByPhoneNumberContaining_ShouldReturnMatchingCustomers() {
+        List<Customer> result = customerRepository.findByPhoneNumberContaining("123");
+
+        assertFalse(result.isEmpty());
+        assertTrue(result.contains(customer1));
+        assertFalse(result.contains(customer2));
     }
 
     @Test

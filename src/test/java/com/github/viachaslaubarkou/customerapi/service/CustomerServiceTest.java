@@ -34,7 +34,7 @@ public class CustomerServiceTest {
         customer.setMiddleName("Ivanovich");
         customer.setLastName("Ivanov");
         customer.setEmailAddress("ivan.ivanov@example.com");
-        customer.setPhoneNumber("123-456-7890");
+        customer.setPhoneNumber("1234567890");
     }
 
     @Test
@@ -73,6 +73,29 @@ public class CustomerServiceTest {
     }
 
     @Test
+    void getByPhoneNumber_ShouldReturnMatchingCustomers() {
+        String searchPhone = "123";
+        List<Customer> expectedCustomers = List.of(customer);
+
+        when(customerRepository.findByPhoneNumberContaining(searchPhone)).thenReturn(expectedCustomers);
+
+        List<Customer> result = customerService.getByPhoneNumber(searchPhone);
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(customer));
+        verify(customerRepository, times(1)).findByPhoneNumberContaining(searchPhone);
+    }
+
+    @Test
+    void getByPhoneNumber_ShouldThrowException_ForInvalidPhoneNumber() {
+        String invalidPhone = "123-abc";
+
+        assertThrows(IllegalArgumentException.class, () -> customerService.getByPhoneNumber(invalidPhone));
+
+        verifyNoInteractions(customerRepository);
+    }
+
+    @Test
     public void create_ShouldSaveAndReturnCustomer() {
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
@@ -94,7 +117,7 @@ public class CustomerServiceTest {
         updatedCustomer.setMiddleName("Updatedovich");
         updatedCustomer.setLastName("Updatedov");
         updatedCustomer.setEmailAddress("updated.email@example.com");
-        updatedCustomer.setPhoneNumber("987-654-3210");
+        updatedCustomer.setPhoneNumber("9876543210");
 
         Customer result = customerService.update(updatedCustomer);
 
@@ -113,7 +136,7 @@ public class CustomerServiceTest {
         updatedCustomer.setMiddleName("Updatedovich");
         updatedCustomer.setLastName("Updatedov");
         updatedCustomer.setEmailAddress("updated.email@example.com");
-        updatedCustomer.setPhoneNumber("987-654-3210");
+        updatedCustomer.setPhoneNumber("+9876543210");
 
         when(customerRepository.findById(id)).thenReturn(Optional.empty());
 
