@@ -15,7 +15,7 @@ Customer API is a simple CRUD (Create, Read, Update, Delete) application designe
 - **Java 11 or higher**
 - **Maven 3.6.0 or higher**
 
-## Setup, Build, Test and Run
+## Setup, Build, Test, Run, Monitoring
 ### Setup Instructions
 #### 1. Install MySQL
 [MySQL Installer (Windows)](https://dev.mysql.com/downloads/installer/)  
@@ -96,6 +96,8 @@ Replace `{id}` with a valid customer ID.
 *Method*: `DELETE`  
 *URL*: `http://localhost:8080/api/customers/delete?id={id}`  
 Replace `{id}` with the customer ID to delete.
+### Check metrics
+*URL*: `http://localhost:8080/actuator/metrics`
 
 ## Clone the Repository
 ```bash
