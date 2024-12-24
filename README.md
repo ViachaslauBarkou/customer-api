@@ -91,6 +91,16 @@ Replace `{id}` with the customer ID to delete.
 * **Health Check:** `http://localhost:8080/actuator/health`  
 * **Metrics:** `http://localhost:8080/actuator/metrics`
 
+## CI/CD Pipeline
+This repository uses GitHub Actions for CI/CD. The process includes:
+1. Building and testing the application using Maven.
+2. Building the Docker image and pushing it to Docker Hub.
+### Setup
+1. Add the following secrets to the repository:
+  - `DOCKER_USERNAME`: Your Docker Hub username.
+  - `DOCKER_PASSWORD`: Your Docker Hub password.
+2. Push to the `master` branch to trigger the pipeline.
+
 ## Author
 Viachaslau Barkou
 
