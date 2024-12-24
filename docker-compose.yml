@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./initdb:/docker-entrypoint-initdb.d
+    networks:
+      - customer-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: customer-api
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - customer-network
+
+volumes:
+  mysql-data:
+
+networks:
+  customer-network:

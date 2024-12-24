@@ -5,9 +5,11 @@ Customer API is a simple CRUD (Create, Read, Update, Delete) application designe
 
 ## Functionality
 - **Create Customer**: Add a new customer record with details such as name, email, and phone number.
-- **Retrieve Customers**:
+- **Get Customers**:
     - Fetch all customer records.
     - Fetch a single customer by ID.
+    - Fetch customers by matching any part of any name.
+    - Fetch customers by matching any part of phone number.
 - **Update Customer**: Modify existing customer details.
 - **Delete Customer**: Remove a customer record by ID.
 
@@ -16,57 +18,33 @@ Customer API is a simple CRUD (Create, Read, Update, Delete) application designe
 - **Maven 3.6.0 or higher**
 
 ## Setup, Build, Test, Run, Monitoring
+### Install on your machine
+[Docker](https://docs.docker.com/get-docker/)  
+[Docker Compose](https://docs.docker.com/compose/install/)
+### Clone the Repository
+```bash
+git clone https://github.com/viachaslaubarkou/customer-api.git
+cd customer-api
+```
 ### Setup Instructions
-#### 1. Install MySQL
-[MySQL Installer (Windows)](https://dev.mysql.com/downloads/installer/)  
-For Linux/macOS, install MySQL using a package manager:
+#### 1. Create a .env file in the root directory of the project to define environment variables for MySQL:
+```env
+MYSQL_ROOT_PASSWORD='your_root_password'
+MYSQL_DATABASE=customer_api
+MYSQL_USER='your_customer_username'
+MYSQL_PASSWORD='your_customer_password'
+```
+#### 2. Initialize the Database (Optional)
+If you have SQL scripts to initialize your database, place them in the /initdb directory.
+#### 3. Build and Start the Containers
 ```bash
-sudo apt update && sudo apt install mysql-server  # For Ubuntu/Debian
-brew install mysql  # For macOS
+docker-compose up --build
 ```
-#### 2. Start the MySQL service:
-```bash
-sudo service mysql start  # For Ubuntu/Debian
-brew services start mysql  # For macOS
-```
-#### 3. Create the database and user (if not already created):
-```sql
-CREATE DATABASE `customer-api`;
-CREATE USER 'your_username'@'localhost' IDENTIFIED BY 'your_username';
-GRANT ALL PRIVILEGES ON `customer-api`.* TO 'your_username'@'localhost';
-FLUSH PRIVILEGES;
-```
-#### 4. Set Environment Variables
-Linux/macOS:
-```bash
-export MYSQL_USERNAME=your_username
-export MYSQL_PASSWORD=your_password
-```
-Windows (PowerShell):
-```powershell
-[System.Environment]::SetEnvironmentVariable("MYSQL_USERNAME", "your_username", "User")
-[System.Environment]::SetEnvironmentVariable("MYSQL_PASSWORD", "your_password", "User")
-```
-#### 5. Run the Database Schema Script
-```
-src/main/resources/schema.sql;
-```
-#### 6. Run the Data Population Script (optional)
-```
-src/main/resources/data.sql;
-```
-### Build the Project
-```bash
-mvn clean compile
-```
+### Access the Application
+*URL*: `http://localhost:8080`
 ### Run Tests
 ```bash
 mvn test
-```
-### Start the Application
-#### Run 
-```bash
-mvn spring-boot:run
 ```
 #### API Endpoints:
 * **Retrieve All Customers**  
@@ -96,14 +74,9 @@ Replace `{id}` with a valid customer ID.
 *Method*: `DELETE`  
 *URL*: `http://localhost:8080/api/customers/delete?id={id}`  
 Replace `{id}` with the customer ID to delete.
-### Check metrics
-*URL*: `http://localhost:8080/actuator/metrics`
-
-## Clone the Repository
-```bash
-git clone https://github.com/viachaslaubarkou/customer-api.git
-cd customer-api
-```
+### Monitoring
+* **Health Check:** `http://localhost:8080/actuator/health`  
+* **Metrics:** `http://localhost:8080/actuator/metrics`
 
 ## Author
 Viachaslau Barkou
