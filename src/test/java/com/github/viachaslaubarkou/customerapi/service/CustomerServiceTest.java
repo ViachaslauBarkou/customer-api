@@ -2,6 +2,8 @@ package com.github.viachaslaubarkou.customerapi.service;
 
 import com.github.viachaslaubarkou.customerapi.model.Customer;
 import com.github.viachaslaubarkou.customerapi.repository.CustomerRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -11,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -20,6 +23,12 @@ public class CustomerServiceTest {
     @Mock
     private CustomerRepository customerRepository;
 
+    @Mock
+    private MeterRegistry meterRegistry;
+
+    @Mock
+    private Timer timer;
+
     @InjectMocks
     private CustomerService customerService;
 
@@ -28,6 +37,12 @@ public class CustomerServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(meterRegistry.timer("customerapi.service.get.by.id.time")).thenReturn(timer);
+        when(meterRegistry.timer("customerapi.service.get.by.name.time")).thenReturn(timer);
+        when(meterRegistry.timer("customerapi.service.get.by.phone.number.time")).thenReturn(timer);
+        when(timer.record((Supplier<Object>) any())).thenAnswer(invocation -> ((Supplier<?>) invocation.getArgument(0)).get());
+        customerService = new CustomerService(customerRepository, meterRegistry);
+
         customer = new Customer();
         customer.setId(UUID.randomUUID());
         customer.setFirstName("Ivan");
