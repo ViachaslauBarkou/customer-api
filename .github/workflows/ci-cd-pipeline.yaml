@@ -21,10 +21,10 @@ jobs:
           java-version: 17
 
       - name: Build with Maven
-        run: ./mvnw clean package
+        run: mvn clean package
 
       - name: Run Tests
-        run: ./mvnw test
+        run: mvn test
 
   docker-build-and-push:
     runs-on: ubuntu-latest
