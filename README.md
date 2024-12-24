@@ -31,12 +31,25 @@ cd customer-api
 ```env
 MYSQL_ROOT_PASSWORD='your_root_password'
 MYSQL_DATABASE=customer_api
-MYSQL_USER='your_customer_username'
-MYSQL_PASSWORD='your_customer_password'
+MYSQL_USER='your_username'
+MYSQL_PASSWORD='your_password'
 ```
 #### 2. Initialize the Database (Optional)
 If you have SQL scripts to initialize your database, place them in the /initdb directory.
-#### 3. Build and Start the Containers
+#### 3. Containers  
+* **Build and Start**  
+```bash
+docker-compose up --build
+```
+* **Stopping the Application**
+```bash
+docker-compose down
+```
+* **View Logs**
+```bash
+docker-compose logs -f
+```
+* **Rebuild Containers After Code Changes**
 ```bash
 docker-compose up --build
 ```

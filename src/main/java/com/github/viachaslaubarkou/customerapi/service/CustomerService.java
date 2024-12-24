@@ -3,7 +3,8 @@ package com.github.viachaslaubarkou.customerapi.service;
 import com.github.viachaslaubarkou.customerapi.model.Customer;
 import com.github.viachaslaubarkou.customerapi.repository.CustomerRepository;
 import com.github.viachaslaubarkou.customerapi.util.ValidationUtils;
-import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,36 +19,44 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    private final Timer getByIdTimer;
+    private final Timer getByNameTimer;
+    private final Timer getByPhoneNumberTimer;
+
+    public CustomerService(CustomerRepository customerRepository, MeterRegistry meterRegistry) {
         this.customerRepository = customerRepository;
+        getByIdTimer = meterRegistry.timer("customerapi.service.get.by.id.time");
+        getByNameTimer = meterRegistry.timer("customerapi.service.get.by.name.time");
+        getByPhoneNumberTimer = meterRegistry.timer("customerapi.service.get.by.phone.number.time");
     }
 
-    @Timed(value = "customerapi.service.get.all.time")
     public List<Customer> getAll() {
         logger.info("Getting all customers");
         return customerRepository.findAll();
     }
 
-    @Timed(value = "customerapi.service.get.by.id.time")
     public Optional<Customer> getById(UUID id) {
         logger.info("Getting customer by id: {}", id);
-        return customerRepository.findById(id);
+        return getByIdTimer.record(() -> {
+            return customerRepository.findById(id);
+        });
     }
 
-    @Timed(value = "customerapi.service.get.by.name.time")
     public List<Customer> getByName(String name) {
         logger.info("Getting customer by name: {}", name);
-        return customerRepository.findByNameContainingIgnoreCase(name);
+        return getByNameTimer.record(() -> {
+            return customerRepository.findByNameContainingIgnoreCase(name);
+        });
     }
 
-    @Timed(value = "customerapi.service.get.by.phone.number.time")
     public List<Customer> getByPhoneNumber(String phoneNumber) {
         logger.info("Getting customer by phoneNumber: {}", phoneNumber);
-        validatePhoneNumber(phoneNumber);
-        return customerRepository.findByPhoneNumberContaining(phoneNumber);
+        return getByPhoneNumberTimer.record(() -> {
+            validatePhoneNumber(phoneNumber);
+            return customerRepository.findByPhoneNumberContaining(phoneNumber);
+        });
     }
 
-    @Timed(value = "customerapi.service.create.time")
     public Customer create(Customer customer) {
         logger.info("Creating new customer: {}", customer);
         validateCustomer(customer);
@@ -55,7 +64,6 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    @Timed(value = "customerapi.service.update.time")
     public Customer update(Customer updatedCustomer) {
         logger.info("Updating customer with id: {}", updatedCustomer.getId());
         validateCustomer(updatedCustomer);
@@ -71,7 +79,6 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
-    @Timed(value = "customerapi.service.delete.time")
     public void delete(UUID id) {
         customerRepository.deleteById(id);
     }
@@ -83,13 +90,15 @@ public class CustomerService {
 
     private void validateEmail(String email) {
         if (!ValidationUtils.isValidEmail(email)) {
-            throw new IllegalArgumentException("Invalid email format");
+            logger.error("Wrong email format: {}", email);
+            throw new IllegalArgumentException("Wrong email format");
         }
     }
 
     private void validatePhoneNumber(String phoneNumber) {
         if (!ValidationUtils.isValidPhoneNumber(phoneNumber)) {
-            throw new IllegalArgumentException("Invalid phone number format");
+            logger.error("Wrong phone number format: {}", phoneNumber);
+            throw new IllegalArgumentException("Wrong phone number format");
         }
     }
 }
