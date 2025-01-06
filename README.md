@@ -59,7 +59,7 @@ docker-compose up --build
 ```bash
 mvn test
 ```
-#### API Endpoints:
+### API Endpoints:
 * **Retrieve All Customers**  
 *Method*: `GET`  
 *URL*: `http://localhost:8080/api/customers/getAll`
@@ -90,6 +90,49 @@ Replace `{id}` with the customer ID to delete.
 ### Monitoring
 * **Health Check:** `http://localhost:8080/actuator/health`  
 * **Metrics:** `http://localhost:8080/actuator/metrics`
+
+## Kubernetes Deployment
+### Prerequisites
+- **Minikube**: Install [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+- **kubectl**: Install [kubectl](https://kubernetes.io/docs/tasks/tools/)
+### Deployment Steps
+1. **Start Minikube**:
+```bash
+minikube start
+```
+2. **Create Secrets**:
+Define sensitive data for the application in `secrets.yaml`:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: customer-api-secret
+type: Opaque
+data:
+  MYSQL_USER: <base64-encoded-your-username>
+  MYSQL_PASSWORD: <base64-encoded-your-password>=
+  MYSQL_ROOT_PASSWORD: <base64-encoded-your-root-password>
+```
+3. **Deploy Resources**:
+```bash
+kubectl apply -f ./k8s
+```
+4. **Check Deployment**:
+```bash
+kubectl get pods
+kubectl get svc
+```
+5. **Access Application**:
+- **Service URL**:
+```bash
+minikube service customer-api --url
+```
+The application will be available at the printed URL (e.g., `http://127.0.0.1:56422`).
+- **Alternative Port Forwarding**:
+```bash
+kubectl port-forward pod/<pod-name> 8080:8080
+```
+Access the application at `http://localhost:8080`.
 
 ## CI/CD Pipeline
 This repository uses GitHub Actions for CI/CD. The process includes:
